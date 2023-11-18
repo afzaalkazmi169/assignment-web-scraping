@@ -1,0 +1,37 @@
+import requests
+from bs4 import BeautifulSoup
+import csv
+import json
+
+header = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36',
+          'referer':'https://www.zillow.com/homes/Missoula,-MT_rb/'}
+
+data = requests.get('https://www.zillow.com/portland-or/', headers=header)
+soup = BeautifulSoup(data.text, 'lxml')
+
+address = soup.find_all('address', {'data-test':'property-card-addr'})
+
+
+price = soup.find_all('span', {'data-test':'property-card-price'})
+
+
+
+adr=[]
+pr=[]
+for result in address:
+    adr.append(result.text)
+for result in price:
+    pr.append(result.text)
+
+print(adr)
+print(pr)
+scraped_data = list(zip(adr, price))
+
+
+# Writing to CSV
+csv_filename = 'property_data.csv'
+
+
+for i in range(len(adr)):
+    with open("property_data.csv", "a") as f:
+        f.write(str(adr[i])+"; "+str(pr[i])+"; \n")
